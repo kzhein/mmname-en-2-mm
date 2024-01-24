@@ -32,6 +32,7 @@
       const form = document.querySelector('form');
       const enNameInput = document.querySelector('#enName');
       const mmNameInput = document.querySelector('#mmName');
+      const button = document.querySelector('button');
 
       const enToMmMap = {};
 
@@ -47,6 +48,8 @@
 
       form.addEventListener('submit', async e => {
         e.preventDefault();
+
+        button.setAttribute('aria-busy', 'true');
 
         if (Object.keys(enToMmMap).length === 0) {
           const csv = await fetch(
@@ -64,6 +67,8 @@
         const mmName = en2mm(enName);
 
         mmNameInput.value = mmName;
+
+        button.setAttribute('aria-busy', 'false');
       });
     </script>
   </body>

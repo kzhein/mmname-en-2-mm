@@ -12,7 +12,7 @@
   <body>
     <main class="container">
       <h1>Convert Myanmar (Burmese) Name in English to Myanmar</h1>
-      <form>
+      <form id="en2mm">
         <div class="grid">
           <label for="enName"
             >English Name <input type="text" name="enName" id="enName" required
@@ -29,7 +29,7 @@
     <script type="module">
       import Papa from 'https://esm.sh/papaparse@5.4.1';
 
-      const form = document.querySelector('form');
+      const form = document.querySelector('#en2mm');
       const enNameInput = document.querySelector('#enName');
       const mmNameInput = document.querySelector('#mmName');
       const button = document.querySelector('button');

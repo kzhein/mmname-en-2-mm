@@ -1,3 +1,9 @@
-## Myanmar (Burmese) Name in English to Myanmar
+## Myanmar (Burmese) Name Converter
 
-A playground to convert Myanmar (Burmese) Name written in English to Myanmar using the data from https://github.com/MgHla/Myanmar-Name_en-2-mm.
+A playground to convert Myanmar (Burmese) names (To or from Myanmar).
+
+## Credits
+
+Data: https://github.com/MgHla/Myanmar-Name_en-2-mm
+
+Syllable Breaker: https://github.com/eimg/myanmar-text-breaker

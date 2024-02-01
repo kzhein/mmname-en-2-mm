@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Convert Myanmar (Burmese) Name in English to Myanmar</title>
+    <title>Myanmar (Burmese) Name Converter</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
@@ -11,16 +11,23 @@
   </head>
   <body>
     <main class="container">
-      <h1>Convert Myanmar (Burmese) Name in English to Myanmar</h1>
+      <h1>Myanmar (Burmese) Name Converter</h1>
       <form id="en2mm">
         <div class="grid">
-          <label for="enName"
-            >English Name <input type="text" name="enName" id="enName" required
+          <label for="nameInput"
+            >Enter Name (English or Myanmar)
+            <input type="text" name="nameInput" id="nameInput" required
           /></label>
-          <label for="mmName"
-            >Myanmar (Burmese) Name
-            <input type="text" name="mmName" id="mmName" readonly
-          /></label>
+          <label for="nameOutput"
+            >Result
+            <textarea
+              name="nameOutput"
+              id="nameOutput"
+              cols="30"
+              rows="1"
+              readonly
+            ></textarea>
+          </label>
         </div>
         <button>Convert</button>
       </form>
@@ -28,13 +35,26 @@
 
     <script type="module">
       import Papa from 'https://esm.sh/papaparse@5.4.1';
+      import { syllable } from './syllable-breaker.js';
 
       const form = document.querySelector('#en2mm');
-      const enNameInput = document.querySelector('#enName');
-      const mmNameInput = document.querySelector('#mmName');
+      const nameInput = document.querySelector('#nameInput');
+      const nameOutput = document.querySelector('#nameOutput');
       const button = document.querySelector('button');
 
       const enToMmMap = {};
+      const mmToEnMap = {};
+
+      const getAllCombos = (list, n = 0, result = [], current = []) => {
+        if (n === list.length) {
+          result.push(current);
+        } else {
+          list[n].forEach(item =>
+            getAllCombos(list, n + 1, result, [...current, item])
+          );
+        }
+        return result;
+      };
 
       const en2mm = enName => {
         let mmName = '';
@@ -47,8 +67,30 @@
             mmName += enToMmMap[enWord] || enWord;
           });
 
-        return mmName;
+        return [mmName];
       };
+
+      const mm2en = mmName => {
+        const syllables = syllable(mmName)
+          .map(syl => syl.trim())
+          .filter(syl => !!syl);
+        const enWords = [];
+
+        syllables.forEach(syl => {
+          enWords.push(mmToEnMap[syl] === undefined ? [syl] : mmToEnMap[syl]);
+        });
+
+        const allCombos = getAllCombos(enWords);
+        const result = [];
+
+        allCombos.forEach(combo => {
+          result.push(combo.join(' '));
+        });
+
+        return result;
+      };
+
+      const isMyanmarName = str => /[\u1000-\u109F]/.test(str);
 
       form.addEventListener('submit', async e => {
         e.preventDefault();
@@ -64,13 +106,22 @@
 
           data.slice(1).forEach(dt => {
             enToMmMap[dt[0].toLowerCase()] = dt[1];
+
+            mmToEnMap[dt[1]] =
+              mmToEnMap[dt[1]] === undefined
+                ? [dt[0]]
+                : [...mmToEnMap[dt[1]], dt[0]];
           });
         }
 
-        const enName = enNameInput.value;
-        const mmName = en2mm(enName);
+        const inputName = nameInput.value;
 
-        mmNameInput.value = mmName;
+        const outputNames = isMyanmarName(inputName)
+          ? mm2en(inputName)
+          : en2mm(inputName);
+
+        nameOutput.rows = Math.min(outputNames.length, 5);
+        nameOutput.value = outputNames.join('\n');
 
         button.setAttribute('aria-busy', 'false');
       });

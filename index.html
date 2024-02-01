@@ -39,9 +39,13 @@
       const en2mm = enName => {
         let mmName = '';
 
-        enName.split(' ').forEach(enWord => {
-          mmName += enToMmMap[enWord.toLowerCase()] || enWord;
-        });
+        enName
+          .trim()
+          .toLowerCase()
+          .split(' ')
+          .forEach(enWord => {
+            mmName += enToMmMap[enWord] || enWord;
+          });
 
         return mmName;
       };
@@ -63,7 +67,7 @@
           });
         }
 
-        const enName = enNameInput.value.trim();
+        const enName = enNameInput.value;
         const mmName = en2mm(enName);
 
         mmNameInput.value = mmName;
